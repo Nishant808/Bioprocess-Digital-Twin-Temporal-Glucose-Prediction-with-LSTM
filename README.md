@@ -119,7 +119,7 @@ The new autoencoder approach shifts focus from supervised glucose prediction to 
   - pH trends
   - Temperature monitoring
   - Reconstruction error with anomaly detection threshold
-
+![Image](/output.png)
 ---
 
 ## 🔧 Customization
