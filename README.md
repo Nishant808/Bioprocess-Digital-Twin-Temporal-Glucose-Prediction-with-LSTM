@@ -2,7 +2,7 @@
 
 ## 🧬 Project Overview
 
-This repository contains a deep learning pipeline designed to predict **Glucose concentration** in a bioreactor based on real-time online sensor data (DO, pH, and Temperature). The project explores multiple neural network architectures, from baseline LSTM models to advanced hybrid approaches combining **Convolutional Neural Networks (Conv1D) with LSTM autoencoders** for anomaly detection and process monitoring.
+This repository contains a deep learning pipeline designed to predict **Glucose concentration** in a bioreactor based on real-time online sensor data (DO, pH, and Temperature). The project explores multiple neural network architectures—from baseline LSTM regression to hybrid Conv1D-LSTM autoencoders for unsupervised anomaly detection.
 
 ## 🛠 Tech Stack
 
@@ -51,7 +51,7 @@ The following table documents the systematic optimization process and the challe
 ### 🔍 Key Technical Insights
 
 * **Hardware Acceleration:** Successfully implemented the **MPS (Metal Performance Shaders)** backend, reducing training time significantly on M4 architecture compared to CPU-bound training.
-* **The "Mean Guessing" Problem:** Identified a persistent mode collapse where the model converged to the mean of the training set. This highlighted the need for higher signal-to-noise ratios in supervised learning.
+* **The "Mean Guessing" Problem:** Identified a persistent mode collapse where the model converged to the mean of the training set. This highlighted the need for higher signal-to-noise ratios in sensor data.
 * **Inverse Scaling Nuances:** Developed a robust "Dummy Array" method to perform inverse transformations on 1D predictions using a 4D scaler, ensuring real-world unit integrity.
 * **Hybrid Architecture Benefits:** The Conv1D-LSTM autoencoder offers:
   - **Spatial Feature Extraction:** Conv1D layers capture local patterns in multivariate sensor data
@@ -63,7 +63,7 @@ The following table documents the systematic optimization process and the challe
 
 ## 📈 Current Status & Roadmap
 
-While the original LSTM regression $R^2$ remains negative, the project has successfully mapped out the **failure surface** of temporal regression in bioprocesses. The low MAE (0.10 g/L) indicates the model captures meaningful patterns but struggles with absolute prediction.
+While the original LSTM regression $R^2$ remains negative, the project has successfully mapped out the **failure surface** of temporal regression in bioprocesses. The low MAE (0.10 g/L) indicates the model captures meaningful signal; however, the task complexity and data limitations require fundamental architectural changes.
 
 ### Phase II: Conv1D-LSTM Autoencoder
 The new autoencoder approach shifts focus from supervised glucose prediction to **unsupervised process monitoring**:
@@ -113,13 +113,23 @@ The new autoencoder approach shifts focus from supervised glucose prediction to 
    - Visualize predictions vs. actual values with anomaly detection threshold
 
 ### Expected Output
-- 5-panel matplotlib figure showing:
-  - Glucose levels (actual vs. model trajectory)
-  - Dissolved Oxygen dynamics
-  - pH trends
-  - Temperature monitoring
-  - Reconstruction error with anomaly detection threshold
-![Image](/output.png)
+
+The Conv1D-LSTM Autoencoder produces a comprehensive 5-panel visualization tracking continuous biological kinetics:
+
+1. **Glucose Levels (g/L):** Compares actual biological flow (solid line) against the model's dynamic trajectory (dashed line), showing prediction fidelity across the cultivation timeline.
+
+2. **Dissolved Oxygen (DO %):** Monitors oxygen availability throughout the process, revealing system dynamics and potential oxygenation stress during anomalous phases.
+
+3. **pH Trends:** Tracks pH stability, which is critical for cell viability and metabolic activity. The model learns normal pH oscillation patterns.
+
+4. **Temperature Monitoring (°C):** Captures thermal dynamics and the injected malfunction zone (shaded beige region, t=600-750 steps) where deliberate anomalies occur.
+
+5. **Reconstruction Error (MAE Metrics):** The anomaly detection layer—reconstruction error spikes sharply during the injected fault window and remains low during normal operation. The dotted threshold line represents the system anomaly detection boundary (μ + 4σ), enabling automated fault detection without labeled anomaly data.
+
+**Key Performance Indicator:** The model successfully reconstructs all four sensor channels with high fidelity during normal operation, demonstrating that the hybrid Conv1D-LSTM architecture captures the underlying bioprocess dynamics effectively.
+
+![Conv1D-LSTM Autoencoder Performance: Continuous Biological Kinetics Tracker](/output.png)
+
 ---
 
 ## 🔧 Customization
